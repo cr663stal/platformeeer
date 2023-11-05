@@ -5,7 +5,8 @@ using UnityEngine;
 public class Script1 : MonoBehaviour
 {
     private float _speed;
-    // Start is called before the first frame update
+    int a = 1;
+
     void Start()
     {
         
