@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Script1 : MonoBehaviour
 {
+    private float _speed;
     int a = 1;
 
     void Start()
