@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class script2 : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private float _jupFosrse = 89f;
     void Start()
     {
         
