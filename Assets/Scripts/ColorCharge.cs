@@ -11,13 +11,30 @@ public class ColorCharge : MonoBehaviour
     {
         _sprite = GetComponent<SpriteRenderer>();
     }
-    public void ChangeSprite()
+
+    private void ChangeSprite()
     {
         _sprite.color = _aquablue;
     }
-    public void ResetSprite()
+
+    private void ResetSprite()
     {
         _sprite.color = Color.white;
     }
-    
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            ChangeSprite();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            ResetSprite();
+        }
+    }
 }
