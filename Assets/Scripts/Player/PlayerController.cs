@@ -4,11 +4,38 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [System.Flags]
+    public enum StatesCharacter 
+    {
+        Waiting = 1 << 0,
+        Walking = 1 << 1,
+        Clibing = 1 << 2,
+        Flying = 1 << 3,
+        Shooting = 1 << 4,
+        Fithing = 1 << 5,
+        Dieing = 1 << 6,
+        Using = 1 << 7,
+        CanNotWalk = Clibing | Fithing | Using | Dieing,
+        CanNotShoot = Clibing | Fithing | Dieing | Using,
+        CanNotFight = Shooting | Dieing | Using
+    }
+    /*
+    [System.Flags]
+    public enum States
+    {
+        StateA = 1 << 0,
+        StateB = 1 << 1,
+        StateC = 1 << 2,
+        StateD = 1 << 3
+    }*/
+
+    [SerializeField] private StatesCharacter _state = StatesCharacter.Walking;
     [SerializeField] private float _jumpForce;
+    [SerializeField] private float _jumpOffset = 5;
     [SerializeField] private float _speed;
 
+
     private Rigidbody2D _rigidbody2D;
-    private bool _isGrounded = true;
 
     private void Awake()
     {
@@ -20,34 +47,63 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    public void Jump()
+    private void Jump()
     {
-        if (_isGrounded)
+        if (CheckGround())
         {
-            _rigidbody2D.AddForce(new Vector2(0, _jumpForce));
+            _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
         }
     }
 
-    public void Move(float moving)
+    private void HorizontalMovement(float directoin)
     {
-        Vector2 VectorX = new Vector2(moving * _speed, _rigidbody2D.velocity.y);
-        _rigidbody2D.velocity = VectorX;
+        if ((_state & StatesCharacter.CanNotWalk) == 0)
+        {
+            _rigidbody2D.velocity = new Vector2(directoin * _speed, _rigidbody2D.velocity.y);
+            //_state |= StatesCharacter.Walking;
+        }
+
+        else if(directoin < 0.1)
+        {
+            //_state ^= StatesCharacter.Walking; //в общем-то тут все плохо, моя концепция ломается.
+        }
     }
+
+    public void Move(float moving, bool isJumpPressed)
+    {
+        if (isJumpPressed)
+        {
+            Jump();
+        }
+        HorizontalMovement(moving);
+    }
+
+    private bool CheckGround()
+    {
+        bool isGrounded;
+        
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, _jumpOffset);
+        
+        if (hit.collider != null)
+        {
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
+        return isGrounded;
+    }
+
+    
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Ground"))
-        {
-            _isGrounded = false;
-        }
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Ground"))
-        {
-            _isGrounded = true;
-        }
-
+        
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    private float _moving;
     private PlayerController _playerController;
 
     private void Awake()
@@ -14,16 +13,11 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        _moving = Input.GetAxis("Horizontal");
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _playerController.Jump();
-        }
         
+        float direction = Input.GetAxis("Horizontal");
+        bool isJump = Input.GetButtonDown("Jump");
+        
+        _playerController.Move(direction, isJump);       
     }
 
-    private void FixedUpdate()
-    {
-        _playerController.Move(_moving);
-    }
 }
