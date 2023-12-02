@@ -29,17 +29,22 @@ public class PlayerController : MonoBehaviour
         StateD = 1 << 3
     }*/
 
-    [SerializeField] private StatesCharacter _state = StatesCharacter.Walking;
+    //[SerializeField] private StatesCharacter _state = StatesCharacter.Walking;
     [SerializeField] private float _jumpForce;
     [SerializeField] private float _jumpOffset = 5;
     [SerializeField] private float _speed;
+    [SerializeField] private float _verticalBlockUp;
+    [SerializeField] private float _verticalBlockDown;
+    private bool _isRightDirection;
 
 
-    private Rigidbody2D _rigidbody2D;
+    private Rigidbody _rigidbody;
+    private Transform _transform;
 
     private void Awake()
     {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody>();
+        _transform = GetComponent<Transform>();
     }
 
     private void Update()
@@ -47,35 +52,58 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    private void Jump()
+    public void Jump()
     {
-        if (CheckGround())
+        if (!CheckGround())
         {
-            _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
+            _rigidbody.AddForce(new Vector2(_rigidbody.velocity.x, _jumpForce));
         }
     }
 
-    private void HorizontalMovement(float directoin)
+    public void Movement(float directoinHorizontal, float directionVertical)
     {
-        if ((_state & StatesCharacter.CanNotWalk) == 0)
+        
+        Vector3 value = new Vector3(directoinHorizontal, 0, directionVertical);
+        
+        if (CheckVerticalBlock(directionVertical))
         {
-            _rigidbody2D.velocity = new Vector2(directoin * _speed, _rigidbody2D.velocity.y);
-            //_state |= StatesCharacter.Walking;
+            value.z = 0;
+        }
+        
+        _rigidbody.MovePosition(_transform.position + value * _speed * Time.deltaTime);
+
+        if ((directoinHorizontal > 0 && !_isRightDirection) || (directoinHorizontal < 0 && _isRightDirection))
+        {
+            Flip();
+        }
+    }
+
+    private bool CheckVerticalBlock(float direction)
+    {
+        if (direction > 0 && _transform.position.z >= _verticalBlockUp)
+        {
+            return true;
+        }
+        if (direction < 0 && _transform.position.z <= _verticalBlockDown) 
+        {
+            return true;
         }
 
-        else if(directoin < 0.1)
-        {
-            //_state ^= StatesCharacter.Walking; //в общем-то тут все плохо, моя концепция ломается.
-        }
+        return false;
     }
 
     public void Move(float moving, bool isJumpPressed)
     {
-        if (isJumpPressed)
-        {
-            Jump();
-        }
-        HorizontalMovement(moving);
+        
+    }
+
+    private void Flip()
+    {
+        _isRightDirection = !_isRightDirection;
+
+        Vector3 scale = _transform.localScale;
+        scale.x *= -1;
+        _transform.localScale = scale;
     }
 
     private bool CheckGround()
@@ -94,6 +122,7 @@ public class PlayerController : MonoBehaviour
         }
         return isGrounded;
     }
+
 
     
 

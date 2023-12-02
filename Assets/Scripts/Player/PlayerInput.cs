@@ -13,11 +13,60 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        
-        float direction = Input.GetAxis("Horizontal");
-        bool isJump = Input.GetButtonDown("Jump");
-        
-        _playerController.Move(direction, isJump);       
+        InputJump(); 
     }
 
+    private void FixedUpdate()
+    {
+        InputMovement();
+    }
+
+    
+
+    private void InputMovement()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        
+        _playerController.Movement(horizontal, vertical);
+    }
+
+    private void InputJump()
+    {
+        bool isJump = Input.GetButtonDown("Jump");
+        if (isJump)
+        {
+            _playerController.Jump();
+        }
+    }
+
+    private void InputRun()
+    {
+        
+    }
+
+    private void InputSit()
+    {
+
+    }
+
+    private void InputPickUp()
+    {
+
+    }
+
+    private void InputUse()
+    {
+
+    }
+
+    private void InputLook()
+    {
+
+    }
+
+    private void InputFire()
+    {
+
+    }
 }
