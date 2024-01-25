@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
-        if (!CheckGround())
+        if (!CheckGround() && Input.GetKeyDown(KeyCode.Space))
         {
             _rigidbody.AddForce(new Vector2(_rigidbody.velocity.x, _jumpForce));
         }
